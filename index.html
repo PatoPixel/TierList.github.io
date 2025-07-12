@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elo Playlist Ranking - Dark Purple UI</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <!-- 1. Pantalla de selección -->
+      <div id="importMenu" class="centered-screen">
+        <h1>Playlist Ranking</h1>
+        <div class="option-btn" id="btnYoutube">
+          Importar playlist YouTube
+          <i class="fa fa-youtube-play" style="color: red"></i>
+        </div>
+        <div class="option-btn" id="btnSpotify">
+          Importar playlist Spotify
+          <i class="fa fa-spotify" style="color: #1db954"></i>
+        </div>
+        <div class="option-btn" id="btnLoadRanking">
+          Importar ranking existente
+        </div>
+        <input type="file" id="fileInput" accept="application/json" hidden />
+        <input type="file" id="loadSpotifyCSV" accept=".csv" hidden />
+        <input type="file" id="loadRanking" accept="application/json" hidden />
+        <p
+          id="spotifyCsvMsg"
+          class="text-center"
+          style="color: #bb86fc; display: none; margin-top: 20px"
+        >
+          Para Spotify: descarga primero el CSV usando
+          <a
+            href="https://exportify.net/"
+            target="_blank"
+            style="color: #bb86fc; text-decoration: underline"
+            >Exportify</a
+          >
+          y luego impórtalo aquí.
+        </p>
+        <button id="btnSpotifyPlaylist" class="btn btn-purple mt-3">
+          Importar Playlist
+        </button>
+        <p
+          id="youtubeJSONMsg"
+          class="text-center"
+          style="color: #bb86fc; display: none; margin-top: 20px"
+        >
+          Para Youtube: descarga primero el
+          <a
+            href="https://github.com/yt-dlp/yt-dlp/releases/download/2025.06.30/yt-dlp.exe"
+            >yt-dlp</a
+          ><br />
+          ponlo en el escritorio o en una carpeta accesible.<br />
+          Abre una terminal en esa carpeta y ejecuta el comando <br />
+          <code>yt-dlp --flat-playlist --dump-json "URL_DE_LA_PLAYLIST"</code
+          ><br />
+          para obtener el JSON.<br />
+        </p>
+        <button id="btnImportPlaylist" class="btn btn-purple mt-3">
+          Importar Playlist
+        </button>
+      </div>
+
+      <!-- 2. Pantalla votación -->
+      <div
+        id="votingScreen"
+        class="hidden-screen flex-column align-items-center"
+      >
+        <div class="video-container">
+          <div id="boxA" class="video-box"></div>
+          <div id="boxB" class="video-box"></div>
+        </div>
+        <div class="voting-controls text-center">
+          <button id="finishVotingBtn" class="btn btn-purple">
+            Terminar y ver ranking
+          </button>
+          <p style="margin-top: 10px">
+            Comparaciones realizadas: <span id="count">0</span>
+          </p>
+          <button id="backToMenuBtn" class="btn btn-outline-purple mt-3">
+            Volver al menú principal
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Pantalla ranking -->
+<div id="rankingScreen" class="hidden-screen layout-ranking" style="position: relative; padding-bottom: 80px;">
+  <div id="ranking" class="ranking-list"></div>
+
+  <button
+    id="backToMenuFromRankingBtn"
+    class="btn btn-outline-purple mt-3"
+    style="position: absolute; bottom: 20px; left: 20px; margin-top: 10px;"
+  >
+    Volver al menú principal
+  </button>
+
+  <button
+    id="seguirVotandoBtn"
+    class="btn btn-outline-purple mt-3"
+    style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); margin-top: 10px;"
+  >
+    Seguir votando
+  </button>
+
+  <button
+    id="exportarRankingBtn"
+    class="btn btn-outline-purple mt-3"
+    style="position: absolute; bottom: 20px; right: 20px; margin-top: 10px;"
+  >
+    Exportar ranking
+  </button>
+</div>
+
+
+  <script src="https://cdn.jsdelivr.net/gh/moroshko/elo.js@master/elo.js"></script>
+  <script src="app.js"></script>
+
+
+  </body>
+</html>
