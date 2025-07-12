@@ -160,6 +160,15 @@ fileInput.addEventListener("change", async (e) => {
 // ----------------------------------------------------------
 //  IMPORTAR SPOTIFY CSV
 // ----------------------------------------------------------
+// Función auxiliar para buscar variantes de nombres de columna
+function findColumnIndex(header, variants) {
+    for (const variant of variants) {
+        const index = header.indexOf(variant);
+        if (index !== -1) return index;
+    }
+    return -1;
+}
+
 // Leer archivo CSV Spotify
 loadSpotifyCSV.addEventListener("change", (e) => {
     if (!e.target.files.length) return;
@@ -169,28 +178,32 @@ loadSpotifyCSV.addEventListener("change", (e) => {
         try {
             const lines = parseCSV(reader.result);
             if (lines.length === 0) throw new Error("CSV vacío o formato incorrecto");
-            const header = lines[0];
-            const titleIndex = header.indexOf("Track Name");
-            const artistIndex = header.indexOf("Artist Name(s)");
-            const uriIndex = header.indexOf("Track URI");
-            const coverUrlIndex = header.indexOf("Album Image URL");
-            const previewUrlIndex = header.indexOf("Track Preview URL");
 
+            const header = lines[0];
+
+            // Buscar columnas con variantes posibles (en inglés y español)
+            const titleIndex = findColumnIndex(header, ["Track Name", "Nombre de la canción"]);
+            const artistIndex = findColumnIndex(header, ["Artist Name(s)", "Nombre(s) del artista"]);
+            const uriIndex = findColumnIndex(header, ["Track URI", "URI de la canción"]);
+            const coverUrlIndex = findColumnIndex(header, ["Album Image URL", "URL de la imagen del álbum"]);
+            const previewUrlIndex = findColumnIndex(header, ["Track Preview URL", "URL de vista previa de la canción"]);
+
+            // Validación mínima obligatoria
             if (titleIndex === -1 || artistIndex === -1 || uriIndex === -1)
-                throw new Error("CSV no válido: faltan columnas necesarias");
+                throw new Error("CSV no válido: faltan columnas obligatorias como nombre, artista o URI.");
 
             songs = [];
 
             for (let i = 1; i < lines.length; i++) {
                 const row = lines[i];
-                if (row.length <= Math.max(titleIndex, artistIndex, uriIndex, coverUrlIndex, previewUrlIndex))
+                if (row.length <= Math.max(titleIndex, artistIndex, uriIndex))
                     continue;
 
                 const title = row[titleIndex];
                 const artist = row[artistIndex];
                 const uri = row[uriIndex];
-                const cover = row[coverUrlIndex];
-                const preview = row[previewUrlIndex];
+                const cover = coverUrlIndex !== -1 ? row[coverUrlIndex] : null;
+                const preview = previewUrlIndex !== -1 ? row[previewUrlIndex] : null;
 
                 const match = uri.match(/spotify:track:(\w+)/);
                 if (!match) continue;
@@ -204,6 +217,12 @@ loadSpotifyCSV.addEventListener("change", (e) => {
                     previewUrl: preview,
                 });
             }
+
+            if (songs.length === 0) {
+                alert("No se han podido importar canciones. Revisa que el CSV tenga los datos necesarios.");
+                return showImportMenu();
+            }
+
             comparisonCount = 0;
             countSpan.textContent = comparisonCount;
             showVoting();
@@ -214,6 +233,7 @@ loadSpotifyCSV.addEventListener("change", (e) => {
     };
     reader.readAsText(file);
 });
+
 // ----------------------------------------------------------
 //  IMPORTAR RANKING EXISTENTE
 // ----------------------------------------------------------
