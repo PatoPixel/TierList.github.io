@@ -48,7 +48,6 @@ function showVoting() {
     importMenu.classList.add("hidden-screen");
     votingScreen.classList.remove("hidden-screen");
     rankingScreen.classList.add("hidden-screen");
-
     pickVideos();
 }
 
@@ -58,8 +57,10 @@ function showOnlyRanking() {
     importMenu.classList.add("hidden-screen");
     votingScreen.classList.add("hidden-screen");
     rankingScreen.classList.remove("hidden-screen");
-
-    showRanking(); // solo muestra el ranking visual sin sidebars ni contadores
+    showRanking();
+    // Elimina el contenedor fijo si existe
+    let actions = document.getElementById("rankingActionsFixed");
+    if (actions) actions.remove();
 }
 
 
@@ -376,22 +377,25 @@ function createThumbnailBox(song, containerId, voteIndex) {
 
     } else if (song.platform === "spotify") {
         // Título de la canción
-        const title = document.createElement("h4");
-        title.textContent = song.title;
-        title.style.marginBottom = "10px";
-        title.style.textAlign = "center";
-        title.style.color = "var(--text-light)";
-        container.appendChild(title);
+        const content = document.createElement("div");
+content.className = "thumbnail-content";
 
-        // Imagen de la canción
-        const img = document.createElement("img");
-        img.src = song.coverUrl || "https://developer.spotify.com/assets/branding-guidelines/icon3@2x.png";
-        img.alt = song.title;
-        img.title = "Abrir en Spotify";
-        img.style.borderRadius = "8px";
-        img.style.cursor = "pointer";
-        img.onclick = () => window.open(`https://open.spotify.com/track/${song.id}`, "_blank");
-        container.appendChild(img);
+const title = document.createElement("h4");
+title.textContent = song.title;
+title.className = "video-title";
+
+const img = document.createElement("img");
+img.src = song.coverUrl || "https://developer.spotify.com/assets/branding-guidelines/icon3@2x.png";
+img.alt = song.title;
+img.title = "Abrir en Spotify";
+img.style.borderRadius = "8px";
+img.style.cursor = "pointer";
+img.onclick = () => window.open(`https://open.spotify.com/track/${song.id}`, "_blank");
+
+content.appendChild(title);
+content.appendChild(img);
+container.appendChild(content);
+
 
         // Preview si existe
         if (song.previewUrl) {
@@ -472,7 +476,11 @@ function showRanking(scrollTop = 0) {
     songs.sort((a, b) => b.elo - a.elo);
 
     const container = document.getElementById("ranking");
-    container.innerHTML = `<h2 class="mb-4">Ranking final (usa las flechas para reordenar)</h2>`;
+    container.innerHTML = ""; // limpiar sin borrar los botones fuera
+const heading = document.createElement("h2");
+heading.className = "mb-4";
+heading.textContent = "Ranking final (usa las flechas para reordenar)";
+container.appendChild(heading);
 
     // Contenedor scrollable con tamaño fijo (puedes ajustar altura)
     const scrollWrapper = document.createElement("div");
@@ -540,8 +548,8 @@ function showRanking(scrollTop = 0) {
         const leftBtn = document.createElement("button");
         leftBtn.type = "button";
         leftBtn.className = "btn btn-outline-purple btn-uniform";
-        leftBtn.textContent = "⬅️";
         leftBtn.disabled = i === 0;
+        leftBtn.innerHTML = "";
         leftBtn.onclick = () => {
             if (i > 0) {
                 const scrollWrapper = document.querySelector(".scroll-wrapper");
@@ -584,8 +592,8 @@ function showRanking(scrollTop = 0) {
         const rightBtn = document.createElement("button");
         rightBtn.type = "button";
         rightBtn.className = "btn btn-outline-purple btn-uniform";
-        rightBtn.textContent = "➡️";
         rightBtn.disabled = i === songs.length - 1;
+        rightBtn.innerHTML = "";
         rightBtn.onclick = () => {
             if (i < songs.length - 1) {
                 const scrollWrapper = document.querySelector(".scroll-wrapper");
