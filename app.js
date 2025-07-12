@@ -526,12 +526,10 @@ container.appendChild(heading);
             }
         };
         card.appendChild(img);
-
+        
         const titleSpan = document.createElement("span");
         titleSpan.textContent = `${i + 1}. ${song.title}`;
-        titleSpan.style.fontWeight = "700";
-        titleSpan.style.margin = "12px 0 8px 0";
-        titleSpan.style.flexGrow = "1";
+        titleSpan.className = "ranking-title"; 
         card.appendChild(titleSpan);
 
         const eloSpan = document.createElement("span");
